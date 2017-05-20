@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sc-{{ jobid }}
+spec:
+  template:
+    metadata:
+      name: sc-{{ jobid }}
+    spec:
+      containers:
+      - name: sc-{{ jobid }}
+        image: knowengdev/samples_clustering_pipeline:04_26_2017
+        command: ["/suppl/entrypoint.sc.sh"]
+        volumeMounts:
+        - mountPath: /suppl
+          name: suppl
+        - mountPath: /home/test/run_dir
+          name: rundir
+      volumes:
+      - name: suppl
+        hostPath: /home/core/suppl
+      - name: rundir
+        hostPath: /home/core/local_results
+      restartPolicy: Never
