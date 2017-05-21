@@ -11,7 +11,6 @@ cat parameters.yml | sed -e "s#{{[ ]*analysis_method[ ]*}}#${ANALYSIS_METHOD}#" 
     -e "s#{{[ ]*gg_network_name_full_path[ ]*}}#${GG_NETWORK_NAME_FULL_PATH}#" \
     -e "s#{{[ ]*spreadsheet_name_full_path[ ]*}}#${SPREADSHEET_NAME_FULL_PATH}#" \
     -e "s#{{[ ]*phenotype_name_full_path[ ]*}}#${PHENOTYPE_NAME_FULL_PATH}#" \
-    -e "s#{{[ ]*results_directory[ ]*}}#${RESULTS_DIRECTORY}#" \
     -e "s#{{[ ]*number_of_bootstraps[ ]*}}#${NUMBER_OF_BOOTSTRAPS}#" \
     -e "s#{{[ ]*cols_sampling_fraction[ ]*}}#${COLS_SAMPLING_FRACTION}#" \
     -e "s#{{[ ]*rwr_max_iterations[ ]*}}#${RWR_MAX_ITERATIONS}#" \
@@ -20,7 +19,7 @@ cat parameters.yml | sed -e "s#{{[ ]*analysis_method[ ]*}}#${ANALYSIS_METHOD}#" 
     -e "s#{{[ ]*top_beta_of_sort[ ]*}}#${TOP_BETA_OF_SORT}#" >> ./job-parameters.yml
 
 # Print parameters / progress to the logs
-echo "Running Gene Prioritization Pipeline with the following parameters:"
+echo "Running Samples Clustering Pipeline with the following parameters:"
 cat ./job-parameters.yml
 
 # Run the GP pipeline

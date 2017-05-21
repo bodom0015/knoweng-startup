@@ -1,24 +1,77 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: gsc-{{ jobid }}
+  name: gsc-test
 spec:
   template:
     metadata:
-      name: gsc-{{ jobid }}
+      name: gsc-test
     spec:
       containers:
-      - name: gsc-{{ jobid }}
-        image: knowengdev/geneset_characterization_pipeline:04_07_2017
-        command: ["/suppl/entrypoint.gsc.sh"]
+      - name: gene-set-characterization
+#        image: knowengdev/gene_prioritization_pipeline:04_26_2017
+        image: bodom0015/gene-set-characterization
+        env:
+
+        # ANALYSIS_METHOD=[fisher|DRaWR|net_path]
+        - name: ANALYSIS_METHOD
+#          value: "{{ analysis_method }}"
+          value: "net_path"
+
+
+        # Path and file name of the 4 col network file
+        - name: GG_NETWORK_NAME_FULL_PATH
+#          value: "{{ gg_network_name_full_path }}"
+          value: "../data/networks/STRING_experimental_gene_gene.edge.gz"
+
+        # Path and file name of the 4 col network file(needed in DRaWR and Net Path)
+        - name: PG_NETWORK_NAME_FULL_PATH
+#          value: "{{ pg_network_name_full_path }}"
+          value: "../data/networks/kegg_pathway_property_gene.edge.gz"
+
+        # Path and file name of user supplied gene spreadsheet
+        - name: SPREADSHEET_NAME_FULL_PATH
+#          value: "{{ spreadsheet_name_full_path }}"
+          value: "../data/spreadsheets/ProGENI_rwr20_STExp_GDSC_500.rname.gxc.tsv.gz"
+
+        # Map ENSEMBL names to user specified gene names
+        - name: GENE_NAMES_MAP
+#          value: "{{ gene_names_map }}"
+          value: "./data/spreadsheets/ProGENI_rwr20_STExp_GDSC_500_MAP.rname.gxc.tsv.gz"
+
+
+        # Path where the results/temporary files should be stored
+        - name: RESULTS_DIRECTORY
+#          value: "{{ results_directory }}"
+          value: "./results/run_dir"
+
+
+        # Maximum number of iterations without convergence in random walk with restart
+        - name: RWR_MAX_ITERATIONS
+#          value: "{{ rwr_max_iterations }}"
+          value: "100"
+
+        # Frobenius norm tolerence of spreadsheet vector in random walk
+        - name: RWR_CONVERGENCE_TOLERANCE
+#          value: "{{ rwr_convergence_tolerance }}"
+          value: "0.0001"
+
+        # Restart probability in random walk: alpha in V_(n+1) = alpha * N * Vn + (1-alpha) * Vo
+        - name: RWR_RESTART_PROBABILITY
+#          value: "{{ rwr_restart_probability }}"
+          value: "0.5"       
+
+
+        # Number of the new space dimensions in SVD(only needed in Net Path)
+        - name: K_SPACE
+#          value: "{{ k_space }}"
+          value: "100"
+
         volumeMounts:
-        - mountPath: /suppl
-          name: suppl
         - mountPath: /home/test/run_dir
           name: rundir
       volumes:
-      - name: suppl
-        hostPath: /home/core/suppl
       - name: rundir
-        hostPath: /home/core/local_results
+        hostPath:
+          path:  /var/glfs/global/jobs/gene-set-characterization
       restartPolicy: Never

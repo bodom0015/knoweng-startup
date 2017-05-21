@@ -11,7 +11,6 @@ spec:
       - name: gene-prioritization
 #        image: knowengdev/gene_prioritization_pipeline:04_26_2017
         image: bodom0015/gene-prioritization
-        command: ["/home/entrypoint.gp.sh"]
         env:
 
         # ANALYSIS_METHOD=[correlation|net_correlation|bootstrap_correlation|bootstrap_net_correlation]
@@ -38,6 +37,11 @@ spec:
         - name: PHENOTYPE_NAME_FULL_PATH
 #          value: "{{ phenotype_name_full_path }}"
           value: "../data/spreadsheets/TEST_multi_drug_response_pearson.txt"
+
+        # Directory where the result and temporary files will be written
+        - name: RESULTS_DIRECTORY
+#          value: "{{ results_directory }}"
+          value: "./results/run_dir"
 
         # Number of random samplings
         - name: NUMBER_OF_BOOTSTRAPS
@@ -75,5 +79,5 @@ spec:
       volumes:
       - name: rundir
         hostPath:
-          path:  /var/glfs/global/jobs/output/
+          path:  /var/glfs/global/jobs/gene-prioritization/
       restartPolicy: Never
