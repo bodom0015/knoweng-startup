@@ -4,6 +4,12 @@ An experiment in running KnowEnG pipelines as Kubernetes Jobs
 # Prerequisites
 * Docker (preferrably 1.10.x - 1.13.x)
 
+# Building all Docker Images
+To quickly build up all of the pipeline images:
+```bash
+docker run -it --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd):/workdir -w /workdir docker/compose:${DOCKER_VERSION} build
+```
+
 # Running Hyperkube
 To run a development Kubernetes cluster (via Docker):
 ```bash

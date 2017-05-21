@@ -1,0 +1,15 @@
+# A Docker compose file to cimplify building up the images required to run the knoweng pipeline
+
+version: '2'
+services:
+  gene-prioritization:
+    build: ./gene-prioritization
+    image: bodom0015/gene-prioritization
+
+  gene-set-characterization:
+    build: ./gene-set-characterization
+    image: bodom0015/gene-set-characterization
+
+  samples-clustering:
+    build: ./samples-clustering
+    image: bodom0015/samples-clustering
