@@ -35,7 +35,7 @@ tmp_directory:         {{ tmp_directory }}
 # - Fraction of rows selected at random                              -
 # - Fraction of columns selected at random                           -
 # --------------------------------------------------------------------
-#number_of_cluster: 3
+#number_of_clusters: 3
 #number_of_bootstraps:      4
 #rows_sampling_fraction:     0.8 # 0.8 means 80% of rows    
 #cols_sampling_fraction:     0.8 # 0.8 means 80% of columns    
@@ -87,9 +87,6 @@ top_number_of_genes: {{ top_number_of_genes }}
 #processing_method: serial
 
 processing_method: {{ processing_method }}
-
-
-#phenotype_name_full_path: ../data/spreadsheets/UCEC_phenotype.txt
 
 # AWS configuration
 cluster_ip_address:

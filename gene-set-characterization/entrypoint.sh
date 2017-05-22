@@ -15,17 +15,17 @@ cat parameters.yml | sed -e "s#{{[ ]*analysis_method[ ]*}}#${ANALYSIS_METHOD}#" 
     -e "s#{{[ ]*rwr_max_iterations[ ]*}}#${RWR_MAX_ITERATIONS}#" \
     -e "s#{{[ ]*rwr_convergence_tolerence[ ]*}}#${RWR_CONVERGENCE_TOLERANCE}#" \
     -e "s#{{[ ]*rwr_restart_probability[ ]*}}#${RWR_RESTART_PROBABILITY}#" \
-    -e "s#{{[ ]*k_space[ ]*}}#${K_SPACE}#" >> ./job-parameters.yml
+    -e "s#{{[ ]*k_space[ ]*}}#${K_SPACE}#" >> ./run_dir/job-parameters.yml
 
 # Print parameters / progress to the logs
 echo "Running Gene Set Characterization Pipeline with the following parameters:"
-cat ./job-parameters.yml
+cat ./run_dir/job-parameters.yml
 
 # Update Python path
 export PYTHONPATH='./src':$PYTHONPATH
 
 # Run the GP pipeline
-python3 ../src/geneset_characterization.py -run_directory ./ -run_file job-parameters.yml && echo 'Job complete!'
+python3 ../src/geneset_characterization.py -run_directory ./run_dir -run_file job-parameters.yml && echo 'Job complete!'
 
 echo "Output directory:"
 ls -al $OUTPUT_DIR

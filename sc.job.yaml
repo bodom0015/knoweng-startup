@@ -8,50 +8,68 @@ spec:
       name: gp-test
     spec:
       containers:
-      - name: gene-prioritization
+      - name: samples-clustering
 #        image: knowengdev/samples_clustering_pipeline:04_26_2017
         image: bodom0015/samples-clustering
         env:
 
-        # ANALYSIS_METHOD=[correlation|net_correlation|bootstrap_correlation|bootstrap_net_correlation]
+        # ANALYSIS_METHOD=[nmf|cc_nmf|net_nmf|cc_net_nmf]
         - name: ANALYSIS_METHOD
 #          value: "{{ analysis_method }}"
-          value: "bootstrap_net_correlation"
+          value: "cc_net_nmf"
 
-        # CORRELATION_METHOD=[pearson|t_test]
-        - name: CORRELATION_METHOD
-#          value: "{{ correlation_method }}"
-          value: "pearson"
 
         # Path and file name of the 4 col network file
         - name: GG_NETWORK_NAME_FULL_PATH
 #          value: "{{ gg_network_name_full_path }}"
-          value: "../data/networks/TEST_1_gene_gene.edge"
+          value: "../data/networks/keg_ST90_4col.edge"
 
         # Path and file name of user supplied gene sets (aka "features file")
         - name: SPREADSHEET_NAME_FULL_PATH
 #          value: "{{ spreadsheet_name_full_path }}"
-          value: "../data/spreadsheets/TEST_1_gene_sample.tsv"
+          value: "../data/spreadsheets/tcga_ucec_somatic_mutation_data.df"
 
         # Path and file name of user supplied phenotype response file (aka "response file")
         - name: PHENOTYPE_NAME_FULL_PATH
 #          value: "{{ phenotype_name_full_path }}"
-          value: "../data/spreadsheets/TEST_multi_drug_response_pearson.txt"
+          value: "../data/spreadsheets/UCEC_phenotype.txt"
 
-        # Path where the results/temporary files should be stored
+        # Threshold
+        - name: THRESHOLD
+#          value: {{ threshold }}
+          value: "10"
+
+
+        # Path where the results files should be stored
         - name: RESULTS_DIRECTORY
 #          value: "{{ results_directory }}"
           value: "./results/run_dir"
 
+        # Path where the temporary files should be stored
+        - name: TMP_DIRECTORY
+#          value: "{{ tmp_directory }}"
+          value: "./results/tmp"
+
+
         # Number of random samplings
         - name: NUMBER_OF_BOOTSTRAPS
 #          value: "{{ number_of_bootstraps }}"
-          value: "10"
+          value: "4"
 
-        # Select 90% of spreadsheet columns
+        - name: NUMBER_OF_CLUSTERS
+#          value: {{ number_of_clusters }}
+          value: "3"
+
+        # Select 80% of spreadsheet columns
         - name: COLS_SAMPLING_FRACTION
 #          value: "{{ cols_sampling_fraction }}"
-          value: "0.9"
+          value: "0.8"
+
+        # Select 80% of spreadsheet rows
+        - name: ROWS_SAMPLING_FRACTION
+#          value: "{{ rows_sampling_fraction }}"
+          value: "0.8"
+
 
         # Maximum number of iterations without convergence in random walk with restart
         - name: RWR_MAX_ITERATIONS
@@ -61,17 +79,37 @@ spec:
         # Frobenius norm tolerence of spreadsheet vector in random walk
         - name: RWR_CONVERGENCE_TOLERANCE
 #          value: "{{ rwr_convergence_tolerance }}"
-          value: "1.0e-2"
+          value: "0.0001"
 
         # Restart probability in random walk: alpha in V_(n+1) = alpha * N * Vn + (1-alpha) * Vo
         - name: RWR_RESTART_PROBABILITY
 #          value: "{{ rwr_restart_probability }}"
-          value: "0.5"       
+          value: "0.7"       
+
 
         # Number of top genes selected
-        - name: TOP_BETA_OF_SORT
-#          value: "{{ top_beta_of_sort }}"
-          value: "3"
+        - name: TOP_NUMBER_OF_GENES
+#          value: "{{ top_number_of_genes }}"
+          value: "100"
+
+        # processing_method dictionary, valid values are serial, parallel, dist_comp
+        # single core machine: set the processing_method value to be serial
+        # multi core machine: set the processing_method value to be parallel
+        # multi node machine: set the processing_method value to be dist_comp 
+        - name: PROCESSING_METHOD
+#          value: "{{ processing_method }}"
+          value: "serial"
+
+        - name: CLUSTER_IP_ADDRESSES
+          value: ""
+
+        - name: CLUSTER_SHARED_RAM
+#          value: "{{ cluster_shared_ram }}"
+          value: "/mnt/ramdisk/knoweng/"
+
+        - name: CLUSTER_SHARED_VOLUME
+#          value: "{{ cluster_shared_volume }}"
+          value: "/mnt/clustershare/knoweng/"
 
         volumeMounts:
         - mountPath: /home/test/run_dir
@@ -79,5 +117,5 @@ spec:
       volumes:
       - name: rundir
         hostPath:
-          path:  /var/glfs/global/jobs/output/
+          path:  /var/glfs/global/jobs/output/samples-clustering
       restartPolicy: Never
