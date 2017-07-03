@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 OUTPUT_DIR=/home/test/run_dir/results
 
@@ -17,7 +18,7 @@ cat parameters.yml | sed -e "s#{{[ ]*analysis_method[ ]*}}#${ANALYSIS_METHOD}#" 
     -e "s#{{[ ]*rwr_max_iterations[ ]*}}#${RWR_MAX_ITERATIONS}#" \
     -e "s#{{[ ]*rwr_convergence_tolerence[ ]*}}#${RWR_CONVERGENCE_TOLERANCE}#" \
     -e "s#{{[ ]*rwr_restart_probability[ ]*}}#${RWR_RESTART_PROBABILITY}#" \
-    -e "s#{{[ ]*top_beta_of_sort[ ]*}}#${TOP_BETA_OF_SORT}#" >> ./job-parameters.yml
+    -e "s#{{[ ]*top_beta_of_sort[ ]*}}#${TOP_BETA_OF_SORT}#" > ./job-parameters.yml
 
 # Print parameters / progress to the logs
 echo "Running Gene Prioritization Pipeline with the following parameters:"

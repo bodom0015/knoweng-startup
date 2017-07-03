@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 OUTPUT_DIR=/home/test/run_dir/results
 
@@ -6,21 +7,17 @@ OUTPUT_DIR=/home/test/run_dir/results
 mkdir -p $OUTPUT_DIR
 
 # Build up a parameters from our env
-cat parameters.yml | sed -e "s#{{[ ]*analysis_method[ ]*}}#${ANALYSIS_METHOD}#" \
-    -e "s#{{[ ]*correlation_method[ ]*}}#${CORRELATION_METHOD}#" \
-    -e "s#{{[ ]*gg_network_name_full_path[ ]*}}#${GG_NETWORK_NAME_FULL_PATH}#" \
-    -e "s#{{[ ]*spreadsheet_name_full_path[ ]*}}#${SPREADSHEET_NAME_FULL_PATH}#" \
+cat parameters.yml | sed -e "s#{{[ ]*spreadsheet_name_full_path[ ]*}}#${SPREADSHEET_NAME_FULL_PATH}#" \
     -e "s#{{[ ]*phenotype_name_full_path[ ]*}}#${PHENOTYPE_NAME_FULL_PATH}#" \
     -e "s#{{[ ]*results_directory[ ]*}}#${RESULTS_DIRECTORY}#" \
-    -e "s#{{[ ]*number_of_bootstraps[ ]*}}#${NUMBER_OF_BOOTSTRAPS}#" \
-    -e "s#{{[ ]*cols_sampling_fraction[ ]*}}#${COLS_SAMPLING_FRACTION}#" \
-    -e "s#{{[ ]*rwr_max_iterations[ ]*}}#${RWR_MAX_ITERATIONS}#" \
-    -e "s#{{[ ]*rwr_convergence_tolerence[ ]*}}#${RWR_CONVERGENCE_TOLERANCE}#" \
-    -e "s#{{[ ]*rwr_restart_probability[ ]*}}#${RWR_RESTART_PROBABILITY}#" \
-    -e "s#{{[ ]*top_beta_of_sort[ ]*}}#${TOP_BETA_OF_SORT}#" >> ./job-parameters.yml
+    -e "s#{{[ ]*taxon_id[ ]*}}#${TAXON_ID}#" \
+    -e "s#{{[ ]*pipeline_type[ ]*}}#${PIPELINE_TYPE}#" \
+    -e "s#{{[ ]*redis_host[ ]*}}#${REDIS_HOST}#" \
+    -e "s#{{[ ]*redis_pass[ ]*}}#${REDIS_PASS}#" \
+    -e "s#{{[ ]*redis_port[ ]*}}#${REDIS_PORT}#" > ./job-parameters.yml
 
 # Print parameters / progress to the logs
-echo "Running Gene Prioritization Pipeline with the following parameters:"
+echo "Running Data Cleanup Pipeline with the following parameters:"
 cat ./job-parameters.yml
 
 # Run the DC pipeline

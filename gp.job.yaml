@@ -41,7 +41,7 @@ spec:
         # Directory where the result and temporary files will be written
         - name: RESULTS_DIRECTORY
 #          value: "{{ results_directory }}"
-          value: "./results/run_dir"
+          value: "./run_dir/results"
 
         # Number of random samplings
         - name: NUMBER_OF_BOOTSTRAPS

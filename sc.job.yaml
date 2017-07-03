@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: gp-test
+  name: sc-test
 spec:
   template:
     metadata:
-      name: gp-test
+      name: sc-test
     spec:
       containers:
       - name: samples-clustering
@@ -43,12 +43,12 @@ spec:
         # Path where the results files should be stored
         - name: RESULTS_DIRECTORY
 #          value: "{{ results_directory }}"
-          value: "./results/run_dir"
+          value: "./run_dir/results"
 
         # Path where the temporary files should be stored
         - name: TMP_DIRECTORY
 #          value: "{{ tmp_directory }}"
-          value: "./results/tmp"
+          value: "./run_dir/results/tmp"
 
 
         # Number of random samplings
@@ -69,6 +69,23 @@ spec:
         - name: ROWS_SAMPLING_FRACTION
 #          value: "{{ rows_sampling_fraction }}"
           value: "0.8"
+
+
+        - name: NMF_CONV_CHECK_FREQ
+#          value: "{{ nmf_conv_check_freq }}"
+          value: "50"
+
+        - name: NMF_MAX_INVARIANCE
+#          value: "{{ nmf_max_invariance }}"
+          value: "200"
+
+        - name: NMF_MAX_ITERATIONS
+#          value: "{{ nmf_max_iterations }}"
+          value: "10000"
+
+        - name: NMF_PENALTY_PARAMETER
+#          value: "{{ nmf_penalty_parameter }}"
+          value: "1400"
 
 
         # Maximum number of iterations without convergence in random walk with restart
@@ -100,6 +117,7 @@ spec:
 #          value: "{{ processing_method }}"
           value: "serial"
 
+        # TODO: How best to pass arrays? Space-delimited strings?
         - name: CLUSTER_IP_ADDRESSES
           value: ""
 

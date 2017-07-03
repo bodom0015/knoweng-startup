@@ -1,14 +1,14 @@
-# KnowEnG Gene Prioritization Pipeline
-See https://github.com/KnowEnG/Gene_Prioritization_Pipeline
+# KnowEnG Gene Set Characterization Pipeline
+See https://github.com/KnowEnG/Gene_Characterization_Pipeline
 
 # Build
 ```bash
-docker build -t bodom0015/gene-prioritization .
+docker build -t bodom0015/gene-set-characterization .
 ```
 
 # Run
 ```bash
-docker run -it -e ANALYSIS_METHOD=pearson -e ... -v $(pwd)/local_results:/home/test/run_dir bodom0015/gene-prioritization
+docker run -it -e ANALYSIS_METHOD=pearson -e ... -v $(pwd)/local_results:/home/test/run_dir bodom0015/gene-set-characterization
 ```
 
 NOTE: You can override any of the default parameters defined below using `-e`
