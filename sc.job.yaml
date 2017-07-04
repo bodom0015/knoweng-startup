@@ -135,5 +135,5 @@ spec:
       volumes:
       - name: rundir
         hostPath:
-          path:  /var/glfs/global/jobs/output/samples-clustering
+          path:  /var/glfs/global/jobs/samples-clustering
       restartPolicy: Never

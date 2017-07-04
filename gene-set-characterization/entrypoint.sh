@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 OUTPUT_DIR=/home/test/run_dir/results
 
@@ -26,7 +25,8 @@ cat ./run_dir/job-parameters.yml
 export PYTHONPATH='./src':$PYTHONPATH
 
 # Run the GP pipeline
-python3 ../src/geneset_characterization.py -run_directory ./run_dir -run_file job-parameters.yml && echo 'Job complete!'
+python3 ../src/geneset_characterization.py -run_directory ./run_dir -run_file job-parameters.yml || exit 1
 
+echo 'Job complete!'
 echo "Output directory:"
 ls -al $OUTPUT_DIR

@@ -1,5 +1,5 @@
 # KnowEnG Gene Set Characterization Pipeline
-See https://github.com/KnowEnG/Gene_Characterization_Pipeline
+See https://github.com/KnowEnG/Geneset_Characterization_Pipeline
 
 # Build
 ```bash
@@ -8,7 +8,7 @@ docker build -t bodom0015/gene-set-characterization .
 
 # Run
 ```bash
-docker run -it -e ANALYSIS_METHOD=pearson -e ... -v $(pwd)/local_results:/home/test/run_dir bodom0015/gene-set-characterization
+docker run -it -e ANALYSIS_METHOD=bootstrap_net_correlation -e ... -v $(pwd)/local_results:/home/test/run_dir bodom0015/gene-set-characterization
 ```
 
 NOTE: You can override any of the default parameters defined below using `-e`
@@ -19,7 +19,7 @@ Name          ~          Example Value
 * `CORRELATION_METHOD` ~ pearson
 * `GP_NETWORK_NAME_FULL_PATH` ~ ../data/networks/TEST_1_gene_gene.edge
 * `SPREADSHEET_NAME_FULL_PATH` ~ ../data/spreadsheets/TEST_1_gene_sample.tsv
-* `PHENOTYPE_NAME_FULL_PATH` ~ ./data/spreadsheets/TEST_multi_drug_response_pearson.txt
+* `PHENOTYPE_NAME_FULL_PATH` ~ ../data/spreadsheets/TEST_multi_drug_response_pearson.txt
 * `NUMBER_OF_BOOTSTRAPS` ~ 10
 * `COLS_SAMPLING_FRACTION` ~ 0.9
 * `RESULTS_DIRECTORY` ~ ./run_dir/results

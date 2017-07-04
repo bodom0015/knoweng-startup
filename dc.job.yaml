@@ -13,11 +13,14 @@ spec:
         image: bodom0015/data-cleanup
         env:
 
+        - name: CORRELATION_MEASURE
+          value: "pearson"
+
         - name: SPREADSHEET_NAME_FULL_PATH
           value: "../data/spreadsheets/TEST_1_gene_expression.tsv"
 
         - name: PHENOTYPE_NAME_FULL_PATH
-          value: "../data/spreadsheets/TEST_1_phenotype.tsv"
+          value: "../data/spreadsheets/TEST_1_phenotype_pearson.tsv"
 
         - name: RESULTS_DIRECTORY
           value: "./run_dir/results"
@@ -33,6 +36,7 @@ spec:
 
         - name: REDIS_HOST
           value: "localhost"
+#          value: "10.254.5.109"
 
         - name: REDIS_PASS
           value: ""

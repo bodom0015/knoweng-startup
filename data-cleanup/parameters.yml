@@ -15,6 +15,8 @@ phenotype_name_full_path:   {{ phenotype_name_full_path }}
 
 results_directory:          {{ results_directory }}
 
+correlation_measure:        {{ correlation_measure }}
+
 # --------------------------------------------------------------------
 # - taxon id as a string                                             -
 # - source_hint as a string                                          -

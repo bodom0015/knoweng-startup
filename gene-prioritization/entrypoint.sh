@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 OUTPUT_DIR=/home/test/run_dir/results
 
@@ -25,7 +24,8 @@ echo "Running Gene Prioritization Pipeline with the following parameters:"
 cat ./job-parameters.yml
 
 # Run the GP pipeline
-python3 ../src/gene_prioritization.py -run_directory ./ -run_file job-parameters.yml && echo 'Job complete!'
+python3 ../src/gene_prioritization.py -run_directory ./ -run_file job-parameters.yml || exit 1
 
+echo 'Job complete!'
 echo "Output directory:"
 ls -al $OUTPUT_DIR
