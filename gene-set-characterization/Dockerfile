@@ -13,12 +13,28 @@ ENV ANALYSIS_METHOD="bootstrap_net_correlation" \
     RWR_RESTART_PROBABILITY="0.5" \
     TOP_BETA_OF_SORT="3" 
 
+# Install redis-tools
+RUN apt-get -qq update && \
+    apt-get -qq install --no-install-recommends \
+      python-pip \
+      redis-tools && \
+    pip install redis && \
+    apt-get -qq autoremove && \
+    apt-get -qq autoclean && \
+    apt-get -qq clean all && \
+    rm -rf /var/cache/apk/*
+
+# Download redis work queue implementation
+ADD https://kubernetes.io/docs/tasks/job/fine-parallel-processing-work-queue/rediswq.py?raw=true ./rediswq.py
+
+# Extract example network data (for some reason this is .gz in github)
 WORKDIR /home/data/networks
 RUN ls -al && gunzip -f STRING_experimental_gene_gene.edge.gz && \
     gunzip -f TEST_1_gene_gene.edge.gz && \
     gunzip -f TEST_1_property_gene.edge.gz && \
     gunzip -f kegg_pathway_property_gene.edge.gz
 
+# Extract example spreadsheet data (for some reason this is .gz in github)
 WORKDIR /home/data/spreadsheets
 RUN ls -al && gunzip -f ProGENI_rwr20_STExp_GDSC_500.rname.gxc.tsv.gz && \
     gunzip -f ProGENI_rwr20_STExp_GDSC_500_MAP.rname.gxc.tsv.gz && \
