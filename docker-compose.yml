@@ -17,3 +17,7 @@ services:
   data-cleanup:
     build: ./pipelines/data-cleanup
     image: bodom0015/data-cleanup
+
+  cloud9:
+    build: ./platform/
+    image: bodom0015/cloud9-nest
