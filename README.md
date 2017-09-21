@@ -4,6 +4,12 @@ An experiment in running KnowEnG pipelines as Kubernetes Jobs
 # Prerequisites
 * Docker (preferrably 1.10.x - 1.13.x)
 
+# Clone the Source
+```bash
+git clone https://github.com/nds-org/ndslabs-knoweng
+cd ndslabs-knoweng
+```
+
 # Building all Docker Images
 To quickly build up all of the pipeline images:
 ```bash
@@ -20,8 +26,6 @@ NOTE: You will need to `docker login` (and probably change the image/tags in the
 # Running Hyperkube
 To run a development Kubernetes cluster (via Docker):
 ```bash
-git clone https://github.com/nds-org/ndslabs-startup
-cd ndslabs-startup
 ./kube.sh
 ```
 
@@ -38,22 +42,22 @@ For an example of the running platform, see: [knoweng.org/analyze](knoweng.org/a
 # Running Pipelines
 To run the Data Cleanup pipeline:
 ```bash
-kubectl create -f dc.job.yaml
+kubectl create -f pipelines/dc.job.yaml
 ```
 
 To run the Gene Prioritization pipeline:
 ```bash
-kubectl create -f gp.job.yaml
+kubectl create -f pipelines/gp.job.yaml
 ```
 
 To run the Gene Set Characterization pipeline:
 ```bash
-kubectl create -f gsc.job.yaml
+kubectl create -f pipelines/gsc.job.yaml
 ```
 
 To run the Samples Clustering pipeline:
 ```bash
-kubectl create -f sc.job.yaml
+kubectl create -f pipelines/sc.job.yaml
 ```
 
 This will create the Job objects on your Kubernetes cluster. Job objects themselves don't execute anything (and therefore don't keep logs),
@@ -125,7 +129,7 @@ NOTE: On multi-node clusters, you will need to SSH to a compute node or start a 
 # Cleaning Up Jobs
 Kubernetes leaves it up to the user to delete their own Job objects, which stick around indefinitely to ease debugging.
 
-To delete a job (and trigger clean up its corresponding pods):
+To delete a job (and trigger clean up of its corresponding pods):
 ```bash
 kubectl delete jobs/gp-test
 ```
