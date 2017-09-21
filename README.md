@@ -27,6 +27,14 @@ cd ndslabs-startup
 
 NOTE: You'll need to manually add the path the the `kubectl` binary to your `$PATH`.
 
+# Running the Platform
+To run the KnowEnG platform and a Cloud9 IDE:
+```bash
+kubectl create -f platform/
+```
+
+For an example of the running platform, see: [knoweng.org/analyze](knoweng.org/analyze)
+
 # Running Pipelines
 To run the Data Cleanup pipeline:
 ```bash
@@ -48,9 +56,10 @@ To run the Samples Clustering pipeline:
 kubectl create -f sc.job.yaml
 ```
 
-This will create the Job objects on your Kubernetes cluster. Job objects themselves don't execute anything (and therefore don't keep logs), but they will spawn Pods (groups of containers) to execute the desired work item(s).
+This will create the Job objects on your Kubernetes cluster. Job objects themselves don't execute anything (and therefore don't keep logs),
+but they will spawn Pods (groups of containers) to execute the desired work item(s).
 
-# Monitoring Jobs
+## Monitoring Jobs
 To view the status of your jobs and their pods:
 ```bash
 core@nds842-master1 ~/ndslabs-knoweng $ kubectl get jobs,pods -a
