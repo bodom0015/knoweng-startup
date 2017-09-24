@@ -8,7 +8,6 @@ metadata:
     ingress.kubernetes.io/auth-realm: "Authentication Required"
     ingress.kubernetes.io/ssl-redirect: "true"
     ingress.kubernetes.io/force-ssl-redirect: "true"
-    ingress.kubernetes.io/rewrite-target: "/"
 spec:
   tls:
   - hosts:
@@ -22,22 +21,22 @@ spec:
         backend:
           serviceName: cloud9
           servicePort: 8001
-#      - path: /ide
-#        backend:
-#          serviceName: cloud9
-#          servicePort: 8001
-#      - path: /vfs/
-#        backend:
-#          serviceName: cloud9
-#          servicePort: 8001
-#      - path: /static/
-#        backend:
-#          serviceName: cloud9
-#          servicePort: 8001
-#      - path: /_ping
-#        backend:
-#          serviceName: cloud9
-#          servicePort: 8001
+      - path: /ide
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /vfs/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /_ping
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
 ---
 apiVersion: v1
 kind: Service

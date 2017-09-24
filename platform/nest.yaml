@@ -42,6 +42,9 @@ spec:
         imagePullPolicy: Never
         name: jobs
         workingDir: "/code_live"
+        #securityContext:
+          #runAsUser: 0   # DOCKER_UID
+          #fsGroup: 999   # DOCKER_GID
         env:
         - name: PYTHONPATH
           value: "/code_live"
