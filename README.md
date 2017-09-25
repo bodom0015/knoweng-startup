@@ -4,9 +4,9 @@ An experiment in running KnowEnG pipelines as Kubernetes Jobs
 # Prerequisites
 * Docker (preferrably 1.10.x - 1.13.x)
 * Mount propagation must be enabled
-** See https://docs.portworx.com/knowledgebase/shared-mount-propogation.html#ubuntu-configuration-and-shared-mounts
+  * See https://docs.portworx.com/knowledgebase/shared-mount-propogation.html#ubuntu-configuration-and-shared-mounts
 
-NOTE: On my Ubuntu AWS VM, I had to run the following command (or else `./kube.sh` would fail to start):
+NOTE: On my Ubuntu AWS VM, I had to run the following command (or else the kubelet container would fail to start):
 ```bash
 sudo mount --make-shared /
 ```
