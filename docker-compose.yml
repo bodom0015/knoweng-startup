@@ -25,12 +25,12 @@ services:
     image: bodom0015/cloud9-nest
     
   # Platform
-  nest_flask_i:
-    build: ./docker/Dockerfile-nest_flask
-    image: bodom0015/nest:flask
-  nest_jobs_i:
-    build: ./docker/Dockerfile-nest_jobs
-    image: bodom0015/nest:jobs
+#  nest_flask_i:
+#    build: ./docker/Dockerfile-nest_flask
+#    image: bodom0015/nest:flask
+#  nest_jobs_i:
+#    build: ./docker/Dockerfile-nest_jobs
+#    image: bodom0015/nest:jobs
   redis_i:
     image: "redis:3.0.3"
     ports: 

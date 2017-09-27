@@ -2,7 +2,7 @@
 An experiment in running KnowEnG pipelines as Kubernetes Jobs
 
 # Prerequisites
-* Docker (preferrably 1.10.x - 1.13.x)
+* Docker (preferrably 1.10+)
 
 # Clone the Source
 ```bash
@@ -15,6 +15,8 @@ To quickly build up all of the pipeline images:
 ```bash
 ./compose.sh
 ```
+
+NOTE: If your Docker version differs, you may need to adjust the version in `./compose.sh`
 
 To push all images to DockerHub (required for multi-node cluster):
 ```bash
@@ -34,10 +36,39 @@ NOTE: You'll need to manually add the path the the `kubectl` binary to your `$PA
 # Running the Platform
 To run the KnowEnG platform and a Cloud9 IDE:
 ```bash
-kubectl create -f platform/
+./knoweng.sh
 ```
 
 For an example of the running platform, see: [knoweng.org/analyze](knoweng.org/analyze)
+
+## Behind the Scenes
+The `./knoweng.sh` helper script does several things:
+* Ensures that the user has a `basic-auth` secret set up for Cloud9 to consume
+* Ensures that the source code is checked out to `/home/ubuntu` (you will be prompted for your BitBucket credentials)
+* Generates self-signed SSL certs if they are not found for the given domain
+* Ensures that certificates have been imported as Kubernetes secrets
+* Create [ingress rules](ingress.yaml) to route `/ide.html` to Cloud9, and `/` to the KnowEnG Dashboard
+* Starts up the Kubernetes [NGINX Ingress Controller](https://github.com/kubernetes/ingress/tree/master/controllers/nginx)
+* Starts up a Pod running the 4 containers comprising KnowEnG Dashboard
+* Starts up a Pod running the Cloud9 IDE
+
+
+# Viewing Pod Logs
+To view the logs of an individual pod (where your work items are being executed):
+```bash
+root@knowdev2:/home/ubuntu/ndslabs-knoweng# kubectl get pods                                                                                                     
+NAME                         READY     STATUS    RESTARTS   AGE
+cloud9-984f9                 1/1       Running   0          4h
+default-http-backend-blrqv   1/1       Running   0          4h
+nest-1442377537-3hhbf        4/4       Running   0          4h
+nginx-ilb-rc-02fzw           1/1       Running   0          4h
+
+# View the logs of a single-container Pod
+kubectl logs -f nginx-ilb-rc-02fzw
+
+# For multi-container pods, you must specify a container with -c
+kubectl logs -f nest-1442377537-3hhbf -c flask
+```
 
 # Running Pipelines
 To run the Data Cleanup pipeline:
@@ -78,9 +109,10 @@ This will list off all running jobs and their respectives pods (replicas).
 
 NOTE: The `-a` flag tells to Kubernetes to include pods that have `Completed` in the returned list.
 
-## Viewing Logs
-To view the logs of an individual pod (where your work items are being executed):
+## Viewing Pod logs
+Use the pod name to check the log output:
 ```bash
+# View the logs of a Pod spawned by a Job
 kubectl logs -f gp-test-hzcq8 
 ```
 
@@ -126,7 +158,7 @@ We can see that no matter which node ran our jobs, all of our output files are a
 
 NOTE: On multi-node clusters, you will need to SSH to a compute node or start a container mounting the shared storage. The shared storage is not currently mounted on the master.
 
-# Cleaning Up Jobs
+## Cleaning Up Jobs
 Kubernetes leaves it up to the user to delete their own Job objects, which stick around indefinitely to ease debugging.
 
 To delete a job (and trigger clean up of its corresponding pods):
@@ -138,3 +170,7 @@ To delete all jobs:
 ```bash
 kubectl delete jobs --all
 ```
+
+NOTE: Supposedly, Kubernetes can be configured to clean up completed/failed jobs
+[automatically](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#jobs-history-limits), 
+but I have not yet experimented with this feature.
