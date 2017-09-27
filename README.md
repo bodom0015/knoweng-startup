@@ -2,7 +2,13 @@
 An experiment in running KnowEnG pipelines as Kubernetes Jobs
 
 # Prerequisites
-* Docker (preferrably 1.10+)
+* Docker (preferrably 1.10.x - 1.13.x)
+* Mount propagation must be enabled
+  * See https://docs.portworx.com/knowledgebase/shared-mount-propogation.html#ubuntu-configuration-and-shared-mounts
+
+NOTE: On my Ubuntu AWS VM, I had to run the following command (or else the kubelet container would fail to start):
+```bash
+sudo mount --make-shared /
 
 # Clone the Source
 ```bash
@@ -26,12 +32,15 @@ To push all images to DockerHub (required for multi-node cluster):
 NOTE: You will need to `docker login` (and probably change the image/tags in the `docker-compose.yml`) before you can push
 
 # Running Hyperkube
+Before continuing, ensure that you have [enabled shared mount propagation](https://docs.portworx.com/knowledgebase/shared-mount-propogation.html#ubuntu-configuration-and-shared-mounts) on your VM.
+
 To run a development Kubernetes cluster (via Docker):
 ```bash
 ./kube.sh
 ```
 
 NOTE: You'll need to manually add the path the the `kubectl` binary to your `$PATH`.
+
 
 # Running the Platform
 To run the KnowEnG platform and a Cloud9 IDE:
