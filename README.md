@@ -9,6 +9,7 @@ An experiment in running KnowEnG pipelines as Kubernetes Jobs
 NOTE: On my Ubuntu AWS VM, I had to run the following command (or else the kubelet container would fail to start):
 ```bash
 sudo mount --make-shared /
+```
 
 # Clone the Source
 ```bash
