@@ -32,6 +32,9 @@ To push all images to DockerHub (required for multi-node cluster):
 
 NOTE: You will need to `docker login` (and probably change the image/tags in the `docker-compose.yml`) before you can push
 
+# New to Kubernetes
+For an introduction to Kubernetes, check out https://docs.google.com/presentation/d/1VDYrSlwLY_Efucq_n75m9Rf_euJIOIACh27BfOmh-ps/edit?usp=sharing
+
 # Running Hyperkube
 Before continuing, ensure that you have [enabled shared mount propagation](https://docs.portworx.com/knowledgebase/shared-mount-propogation.html#ubuntu-configuration-and-shared-mounts) on your VM.
 
