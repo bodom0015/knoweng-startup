@@ -1,5 +1,5 @@
 # ndslabs-knoweng
-An experiment in running KnowEnG pipelines as Kubernetes Jobs
+An experiment in running KnowEnG platform, pipelines, and IDE under [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/).
 
 # Prerequisites
 * Docker (preferrably 1.10.x - 1.13.x)
@@ -43,7 +43,7 @@ To run a development Kubernetes cluster (via Docker):
 NOTE: You'll need to manually add the path the the `kubectl` binary to your `$PATH`.
 
 ## New to Kubernetes?
-For an introduction to Kubernetes, check out https://docs.google.com/presentation/d/1VDYrSlwLY_Efucq_n75m9Rf_euJIOIACh27BfOmh-ps/edit?usp=sharing
+For some introductory slides to Kubernetes terminology, check out https://docs.google.com/presentation/d/1VDYrSlwLY_Efucq_n75m9Rf_euJIOIACh27BfOmh-ps/edit?usp=sharing
 
 # Running the Platform
 To run the KnowEnG platform and a Cloud9 IDE:
