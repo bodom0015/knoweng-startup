@@ -63,12 +63,12 @@ metadata:
 spec:
   tls:
   - hosts:
-#    - cloud9.knowdev2.knowhub.org
+#    - cloud9.knowdev2.knoweng.org
     - knowdev2.knoweng.org
 #    secretName: cloud9-tls-secret
     secretName: nest-tls-secret
   rules:
-#  - host: cloud9.knowdev2.knowhub.org
+#  - host: cloud9.knowdev2.knoweng.org
   - host: knowdev2.knoweng.org
     http:
       paths:
