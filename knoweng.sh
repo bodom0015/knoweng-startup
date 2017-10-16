@@ -6,7 +6,7 @@
 # Location of "kubectl" binary
 BINDIR="$HOME/bin"
 ECHO="echo -e"
-DOMAIN="*.knowhub.org"
+DOMAIN="*.knoweng.org"
 
 # Stop everything first
 $BINDIR/kubectl delete -f platform/
