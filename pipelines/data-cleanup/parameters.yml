@@ -39,7 +39,7 @@ pipeline_type:              {{ pipeline_type }}
 # - Redis database credentials                                       -
 # --------------------------------------------------------------------
 redis_credential:                                       # knoweng Redis database credentials
-                            #host: knowredis.knowhub.org
+                            #host: knowredis.knoweng.org
                             #password: KnowEnG
                             #port: 6380
 
