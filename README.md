@@ -20,7 +20,7 @@ cd ndslabs-knoweng
 # Building all Docker Images
 To quickly build up all of the pipeline images:
 ```bash
-./compose.sh
+./compose.sh build
 ```
 
 NOTE: If your Docker version differs, you may need to adjust the version in `./compose.sh`
