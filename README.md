@@ -37,9 +37,9 @@ NOTE: You will need to `docker login` (and probably change the image/tags in the
 For some introductory slides to Kubernetes terminology, check out https://docs.google.com/presentation/d/1VDYrSlwLY_Efucq_n75m9Rf_euJIOIACh27BfOmh-ps/edit?usp=sharing
 
 ## Multi-Node Deployment Options
-Vagrant: https://github.com/kubernetes-incubator/kubespray/blob/master/docs/vagrant.md
-Terraform / Kubespray: https://github.com/BenGalewsky/kubespray
-ndslabs-deploy-tools (deprecated): https://github.com/nds-org/ndslabs-deploy-tools
+* Vagrant: https://github.com/kubernetes-incubator/kubespray/blob/master/docs/vagrant.md
+* Terraform / Kubespray: https://github.com/BenGalewsky/kubespray
+* ndslabs-deploy-tools (deprecated): https://github.com/nds-org/ndslabs-deploy-tools
 
 ## Hyperkube (single-node, containerized)
 To run a development Kubernetes cluster (via Docker):
