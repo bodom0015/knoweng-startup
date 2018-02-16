@@ -1,0 +1,10 @@
+FROM knowengdev/gene_prioritization_pipeline:07_26_2017
+
+WORKDIR test
+
+# unzips big spreadsheet
+RUN make env_setup
+
+# default command uses the yml file found here: https://github.com/KnowEnG/Gene_Prioritization_Pipeline/blob/master/data/run_files/BENCHMARK_4_GP_bootstrap_net_pearson.yml
+ENTRYPOINT [ "make" ]
+CMD [ "run_bootstrap_net_pearson" ] 

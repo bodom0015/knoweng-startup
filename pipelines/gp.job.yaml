@@ -58,7 +58,7 @@ spec:
 #          value: "{{ rwr_max_iterations }}"
           value: "100"
 
-        # Frobenius norm tolerence of spreadsheet vector in random walk
+        # Frobenius norm tolerance of spreadsheet vector in random walk
         - name: RWR_CONVERGENCE_TOLERANCE
 #          value: "{{ rwr_convergence_tolerance }}"
           value: "1.0e-2"
