@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gp-benchmark
+spec:
+  parallelism: 2
+  template:
+    metadata:
+      name: gp-benchmark
+    spec:
+      containers:
+      - name: gene-prioritization
+        image: bodom0015/gene-prioritization:benchmark
+        resources:
+          limits:
+            cpu: 4000m
+            memory: 14000M
+          requests:
+            cpu: 2000m
+            memory: 10000M
+        volumeMounts:
+        - name: efs-pvc
+          mountPath: "/home/test/run_dir/results/"
+      restartPolicy: "Never"
+      volumes:
+      - name: efs-pvc
+        persistentVolumeClaim:
+          claimName: efs
+       # volumeMounts:
+       # - mountPath: /home/test/run_dir/results/
+       #   name: rundir
+      #volumes:
+      #- name: rundir
+      #  hostPath:
+      #    path:  /var/glfs/global/jobs/gene-prioritization/results/
+      #restartPolicy: Never
