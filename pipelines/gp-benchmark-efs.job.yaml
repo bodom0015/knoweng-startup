@@ -26,11 +26,3 @@ spec:
       - name: efs-pvc
         persistentVolumeClaim:
           claimName: efs
-       # volumeMounts:
-       # - mountPath: /home/test/run_dir/results/
-       #   name: rundir
-      #volumes:
-      #- name: rundir
-      #  hostPath:
-      #    path:  /var/glfs/global/jobs/gene-prioritization/results/
-      #restartPolicy: Never

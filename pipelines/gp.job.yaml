@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: gp-test
 spec:
+  parallelism: 2
   template:
     metadata:
       name: gp-test
