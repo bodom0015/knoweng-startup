@@ -5,9 +5,10 @@ under Kubernetes.
 # Production Cluster Setup
 1. Run a [Kubernetes cluster on AWS](https://github.com/aws-samples/aws-workshop-for-kubernetes)
 2. Set up [cluster-monitoring](https://github.com/aws-samples/aws-workshop-for-kubernetes/tree/master/02-path-working-with-clusters/201-cluster-monitoring)
-3. Set up [cluster-autoscaling](https://github.com/aws-samples/aws-workshop-for-kubernetes/tree/master/02-path-working-with-clusters/205-cluster-autoscaling)
-4. [Create an EFS volume](https://docs.aws.amazon.com/efs/latest/ug/gs-step-two-create-efs-resources.html) in the same region/vpc/security groups as your Kubernetes worker nodes
-5. Set up the [EFS provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs#getting-started)
+3. Create multiple auto-scaling groups via `kops create ig --subnet <subnets>`
+4. Set up [cluster-autoscaling](https://github.com/aws-samples/aws-workshop-for-kubernetes/tree/master/02-path-working-with-clusters/205-cluster-autoscaling) to watch [multiple ASGs](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-multi-asg.yaml#L139-L141)
+5. [Create an EFS volume](https://docs.aws.amazon.com/efs/latest/ug/gs-step-two-create-efs-resources.html) in the same region/vpc/security groups as your Kubernetes worker nodes
+6. Set up the [EFS provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/aws/efs#getting-started)
 
 # Prerequisites
 * You will need to install [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on your local machine
@@ -89,8 +90,24 @@ $ vi gp.job.yaml
 $ kubectl apply -f gp.job.yaml
 ```
 
-NOTE: This uses an unofficial/out-of-date Docker image that can be updated if 
+NOTE 1: This uses an unofficial/out-of-date Docker image that can be updated if 
 requested.
+
+NOTE 2: To execute on a particular instance group, you can pass a `nodeSelector` as 
+part of your YAML spec:
+```yaml
+     ...
+  template:
+    metadata:
+      name: gp-medium
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: mediumjobs
+      containers:
+      - name: gene-prioritization
+        image: knowengdev/gene_prioritization_pipeline:07_26_2017
+     ...
+```
 
 ## View Running Jobs
 Initially this creates 2 gp-benchmark pods, each running a single container.
