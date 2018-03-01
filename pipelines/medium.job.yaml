@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gp-medium
+spec:
+  parallelism: 2
+  template:
+    metadata:
+      name: gp-medium
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: mediumjobs
+      containers:
+      - name: gene-prioritization
+        image: knowengdev/gene_prioritization_pipeline:07_26_2017
+        workingDir: "/home/test"
+        command: [ "bash" ]
+        args: [ "-c", "make env_setup && echo 'Sleeping for 8 minutes...' && sleep 8m && make run_bootstrap_pearson && echo 'Done!'" ]
+        resources:
+          limits:
+            cpu: 2
+            memory: 6500M
+          requests:
+            cpu: 1 
+            memory: 6500M
+        volumeMounts:
+        - name: efs-pvc
+          mountPath: "/home/test/run_dir/results/"
+      restartPolicy: "OnFailure"
+      volumes:
+      - name: efs-pvc
+        persistentVolumeClaim:
+          claimName: efs

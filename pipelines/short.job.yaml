@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gp-short
+spec:
+  parallelism: 2
+  template:
+    metadata:
+      name: gp-short
+    spec:
+      nodeSelector:
+        kops.k8s.io/instancegroup: nodes
+      containers:
+      - name: gene-prioritization
+        image: knowengdev/gene_prioritization_pipeline:07_26_2017
+        workingDir: "/home/test"
+        command: [ "bash" ]
+        args: [ "-c", "make env_setup && echo 'Sleeping for 50 seconds...' && sleep 50s && make run_all_small && echo 'Done!'" ]
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500M
+          requests:
+            cpu: 250m
+            memory: 250M 
+        volumeMounts:
+        - name: efs-pvc
+          mountPath: "/home/test/run_dir/results/"
+      restartPolicy: "OnFailure"
+      volumes:
+      - name: efs-pvc
+        persistentVolumeClaim:
+          claimName: efs
