@@ -33,9 +33,9 @@ ip-172-20-97-49.ec2.internal     Ready     node      4h        v1.8.6
 ```
 
 NOTE 1: worker nodes are currently divided into 3 instance groups:
-* `nodes`: 2 always-running t2.medium instances
-* `mediumjobs`: 1 - 3 auto-scaling m4.large instances
-* `longjobs`: 1 - 3 auto-scaling m4.xlarge instances
+* `nodes`: 2 always-running t2.medium instances, for short jobs and core services
+* `mediumjobs`: 1 - 3 auto-scaling m4.large instances, for running medium jobs
+* `longjobs`: 1 - 3 auto-scaling m4.xlarge instances, for running long jobs
 
 NOTE 2: Once the next version of the Cluster Autoscaler is released, we should
 be able to scale these groups down to zero to save even more on our AWS budget.
