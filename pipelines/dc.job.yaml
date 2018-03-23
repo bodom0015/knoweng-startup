@@ -35,14 +35,14 @@ spec:
           value: "gene_prioritization_pipeline"
 
         - name: REDIS_HOST
-          value: "localhost"
+          value: "$(NEST_SERVICE_HOST)"
 #          value: "10.254.5.109"
 
         - name: REDIS_PASS
           value: ""
 
         - name: REDIS_PORT
-          value: "6379"
+          value: "$(NEST_SERVICE_PORT_REDIS)"
 
         volumeMounts:
         - mountPath: /home/test/run_dir

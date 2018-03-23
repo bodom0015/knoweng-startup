@@ -11,6 +11,10 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
+  - name: redis
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
   # Selector determines which Pods should be used by this Service
   selector:
     k8s-app: nest
@@ -52,6 +56,8 @@ spec:
           value: "knoweng"
         - name: REDIS_HOST
           value: "localhost"
+        - name: POSTGRES_HOST
+          value: "localhost"
         volumeMounts:
         - name: source
           mountPath: "/code_live"
@@ -84,6 +90,8 @@ spec:
           mountPath: "/code_live"
         - name: userfiles
           mountPath: "/userfiles"
+        - name: demofiles
+          mountPath: "/demo_files"
         - name: uwsgi
           mountPath: "/etc/uwsgi"
         - name: supervisor
@@ -123,6 +131,9 @@ spec:
       - name: userfiles
         hostPath:
           path: "/home/ubuntu/nest/data/userfiles"
+      - name: demofiles
+        hostPath:
+          path: "/home/ubuntu/nest/data/projects/knoweng/demo_files"
       - name: source
         hostPath:
           path: "/home/ubuntu/nest"
