@@ -11,6 +11,7 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
+    # NOTE: This redis instance is currently not being used
   - name: redis
     port: 6379
     protocol: TCP
@@ -58,6 +59,10 @@ spec:
           value: "localhost"
         - name: POSTGRES_HOST
           value: "localhost"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev/lambert8"
+        - name: EXEC_MODE
+          value: "kubernetes"
         volumeMounts:
         - name: source
           mountPath: "/code_live"
@@ -66,7 +71,7 @@ spec:
         - name: networks
           mountPath: "/networks"
         - name: zipreadmes
-          mountPath: "/zip_readmes"
+          mountPath: "/pipeline_readmes"
 
         # nest_flask_i
       - image: bodom0015/nest:flask
@@ -85,6 +90,8 @@ spec:
           value: "localhost"
         - name: REDIS_HOST
           value: "localhost"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev/lambert8"
         volumeMounts:
         - name: source
           mountPath: "/code_live"
@@ -151,4 +158,4 @@ spec:
           path: "/home/ubuntu/nest/data/projects/knoweng/networks"
       - name: zipreadmes
         hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/zip_readmes"
+          path: "/home/ubuntu/nest/data/projects/knoweng/pipeline_readmes"
