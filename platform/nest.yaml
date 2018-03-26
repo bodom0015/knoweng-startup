@@ -46,13 +46,10 @@ spec:
       - image: bodom0015/nest:jobs
         imagePullPolicy: Never
         name: jobs
-        workingDir: "/code_live"
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
           #fsGroup: 999   # DOCKER_GID
         env:
-        - name: PYTHONPATH
-          value: "/code_live"
         - name: PROJECT_ENV
           value: "knoweng"
         - name: REDIS_HOST
@@ -64,20 +61,15 @@ spec:
         - name: EXEC_MODE
           value: "kubernetes"
         volumeMounts:
-        - name: source
-          mountPath: "/code_live"
         - name: userfiles
           mountPath: "/userfiles"
         - name: networks
           mountPath: "/networks"
-        - name: zipreadmes
-          mountPath: "/pipeline_readmes"
 
         # nest_flask_i
       - image: bodom0015/nest:flask
         imagePullPolicy: Never
         name: flask
-        workingDir: "/code_live"
         ports:
         - containerPort: 80
           protocol: TCP
@@ -93,18 +85,8 @@ spec:
         - name: AWS_SHARED_MNT_PATH
           value: "/mnt/knowdev/lambert8"
         volumeMounts:
-        - name: source
-          mountPath: "/code_live"
         - name: userfiles
           mountPath: "/userfiles"
-        - name: demofiles
-          mountPath: "/demo_files"
-        - name: uwsgi
-          mountPath: "/etc/uwsgi"
-        - name: supervisor
-          mountPath: "/etc/supervisor"
-        - name: nginx
-          mountPath: "/etc/nginx"
 
         # postgres_i
       - image: postgres:9.6.2
@@ -138,24 +120,6 @@ spec:
       - name: userfiles
         hostPath:
           path: "/home/ubuntu/nest/data/userfiles"
-      - name: demofiles
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/demo_files"
-      - name: source
-        hostPath:
-          path: "/home/ubuntu/nest"
-      - name: uwsgi
-        hostPath:
-          path: "/home/ubuntu/nest/nest_flask_etc/uwsgi"
-      - name: supervisor
-        hostPath:
-          path: "/home/ubuntu/nest/nest_flask_etc/supervisor"
-      - name: nginx
-        hostPath:
-          path: "/home/ubuntu/nest/nest_flask_etc/nginx"
       - name: networks
         hostPath:
           path: "/home/ubuntu/nest/data/projects/knoweng/networks"
-      - name: zipreadmes
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/pipeline_readmes"
