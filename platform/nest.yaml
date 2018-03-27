@@ -39,36 +39,35 @@ spec:
       labels:
         k8s-app: nest
     spec:
+      imagePullSecrets:
+      - name: regcred
+
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
+        # NOTE: order here determines startup order
+        # "postgres" must start before "flask"
+        # "redis" must start before "jobs"
 
-        # nest_jobs_i
-      - image: bodom0015/nest:jobs
-        imagePullPolicy: Never
-        name: jobs
-        #securityContext:
-          #runAsUser: 0   # DOCKER_UID
-          #fsGroup: 999   # DOCKER_GID
+        # postgres_i
+      - image: postgres:9.6.2
+        name: postgres
         env:
-        - name: PROJECT_ENV
-          value: "knoweng"
-        - name: REDIS_HOST
-          value: "localhost"
-        - name: POSTGRES_HOST
-          value: "localhost"
-        - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev/lambert8"
-        - name: EXEC_MODE
-          value: "kubernetes"
+        - name: PGDATA
+          value: "/data/db/postgres"
+        - name: POSTGRES_USER
+          value: "nest"
+        - name: POSTGRES_PASSWORD
+          value: "Toaslej8"
         volumeMounts:
-        - name: userfiles
-          mountPath: "/userfiles"
-        - name: networks
-          mountPath: "/networks"
+        - name: pgdb
+          mountPath: "/data/db"
+        ports:
+        - containerPort: 5432
+          protocol: TCP
 
         # nest_flask_i
-      - image: bodom0015/nest:flask
-        imagePullPolicy: Never
+      - image: bodom0015/nest-private:flask
+        imagePullPolicy: Always
         name: flask
         ports:
         - containerPort: 80
@@ -88,23 +87,6 @@ spec:
         - name: userfiles
           mountPath: "/userfiles"
 
-        # postgres_i
-      - image: postgres:9.6.2
-        name: postgres
-        env:
-        - name: PGDATA
-          value: "/data/db/postgres"
-        - name: POSTGRES_USER
-          value: "nest"
-        - name: POSTGRES_PASSWORD
-          value: "Toaslej8"
-        volumeMounts:
-        - name: pgdb
-          mountPath: "/data/db"
-        ports:
-        - containerPort: 5432
-          protocol: TCP
-
         # redis_i
       - image: redis:3.0.3
         name: redis
@@ -112,14 +94,44 @@ spec:
         - containerPort: 6379
           protocol: TCP
 
+        # nest_jobs_i
+      - image: bodom0015/nest-private:jobs
+        imagePullPolicy: Always
+        name: jobs
+        #securityContext:
+          #runAsUser: 0   # DOCKER_UID
+          #fsGroup: 999   # DOCKER_GID
+        env:
+        - name: PROJECT_ENV
+          value: "knoweng"
+        - name: REDIS_HOST
+          value: "localhost"
+        - name: POSTGRES_HOST
+          value: "localhost"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev/lambert8"
+        - name: EXEC_MODE
+          value: "kubernetes"
+        volumeMounts:
+        - name: userfiles
+          mountPath: "/userfiles"
+#        - name: networks
+#          mountPath: "/networks"
+
+        volumeMounts:
+        - name: efs-pvc
+          mountPath: "/networks"
     # This YAML assumes that the nest source code has been cloned into /home/ubuntu/nest
       volumes:
+      - name: efs-pvc
+        persistentVolumeClaim:
+          claimName: efs-networks
       - name: pgdb
         hostPath:
           path: "/home/ubuntu/nest/data/db"
       - name: userfiles
         hostPath:
           path: "/home/ubuntu/nest/data/userfiles"
-      - name: networks
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/networks"
+#      - name: networks
+#        hostPath:
+#          path: "/home/ubuntu/nest/data/projects/knoweng/networks"

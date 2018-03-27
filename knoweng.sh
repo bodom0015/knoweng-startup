@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Start Kubernetes
-./kube.sh
+# XXX: For single-node developer instance, uncomment this line
+#./kube.sh
 
 # Location of "kubectl" binary
-BINDIR="$HOME/bin"
+BINDIR="/usr/local/bin"
 ECHO="echo -e"
-DOMAIN="*.knoweng.org"
+DOMAIN="knowcube.ndslabs.org"
 
 # Stop everything first
 $BINDIR/kubectl delete -f platform/
@@ -46,14 +47,8 @@ else
     $ECHO "basic-auth" secret already exists... reusing
 fi
 
-# Ensure source directory exists where we expect
-SRC_DIR="/home/ubuntu/nest"
-if [ ! -d "$SRC_DIR" ]; then
-    git clone https://bitbucket.org/arivisualanalytics/nest.git /home/ubuntu || exit 1
-fi
-
 # Make sure that we have self-signed certs generated
-CRT_DIR="${SRC_DIR}/nest_flask_etc/nginx/ssl"
+CRT_DIR="certs"
 if [ ! -f "${CRT_DIR}/${DOMAIN}.cert" ]; then
     $ECHO "\nGenerating self-signed certificate for $DOMAIN"
     mkdir -p ${CRT_DIR}
