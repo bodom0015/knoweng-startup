@@ -1,21 +1,75 @@
+
+# Ingress rules assign a hostname/path to expose particular ports to the public internet
+# NOTE: "Host" header must match in order to be routed
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # Force users to redirect from HTTP to HTTPS
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+  name: nest-ingress
+spec:
+  tls:
+  - hosts:
+    - knowkube.ndslabs.org
+    secretName: nest-tls-secret
+  rules:
+  - host: knowkube.ndslabs.org
+    http:
+      # Define all paths served by our app to generate an nginx configuration
+      paths:
+      - path: /
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/img/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/node_modules/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/dist/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/css/knoweng/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/css/mmbdb/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /api/
+        backend:
+          serviceName: nest
+          servicePort: 80
+---
 # Services assigns a static IP for our containers to expose particular ports to all Pods in the cluster
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     k8s-app: nest
+  # For ingress to work, this service name must 
+  # match the serviceName defined in the Ingress above
   name: nest
 spec:
   ports:
   - name: http
     port: 80
     protocol: TCP
-    targetPort: 80
     # NOTE: This redis instance is currently not being used
   - name: redis
     port: 6379
     protocol: TCP
-    targetPort: 6379
   # Selector determines which Pods should be used by this Service
   selector:
     k8s-app: nest
@@ -36,6 +90,8 @@ spec:
   # This template describes the Pods that will be created/managed by this Deployment
   template:
     metadata:
+      # For the service to work, this service name label must 
+      # match the selector defined in the Service above
       labels:
         k8s-app: nest
     spec:
@@ -44,7 +100,7 @@ spec:
 
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
-        # NOTE: order here determines startup order
+        # NOTE: order here seems to determine startup order
         # "postgres" must start before "flask"
         # "redis" must start before "jobs"
 
@@ -59,15 +115,17 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "Toaslej8"
         volumeMounts:
-        - name: pgdb
+        - name: pgdata
           mountPath: "/data/db"
         ports:
         - containerPort: 5432
           protocol: TCP
-
+          
         # nest_flask_i
       - image: bodom0015/nest-private:flask
         imagePullPolicy: Always
+        command: [ "bash" ]
+        args: [ "-c", "echo 'Waiting for postgres to start...' && sleep 30s && ./entrypoint.sh" ]
         name: flask
         ports:
         - containerPort: 80
@@ -79,10 +137,11 @@ spec:
           value: "development"
         - name: POSTGRES_HOST
           value: "localhost"
+        # FIXME: currently we still use knowredis
         - name: REDIS_HOST
           value: "localhost"
         - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev/lambert8"
+          value: "/userfiles"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
@@ -93,10 +152,15 @@ spec:
         ports:
         - containerPort: 6379
           protocol: TCP
+        volumeMounts:
+        - name: redisdata
+          mountPath: "/data"
 
         # nest_jobs_i
       - image: bodom0015/nest-private:jobs
         imagePullPolicy: Always
+        command: [ "bash" ]
+        args: [ "-c", "echo 'Waiting for flask to start...' && sleep 1m && python -m nest_py.knoweng.jobs.worker_app" ]
         name: jobs
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
@@ -104,34 +168,35 @@ spec:
         env:
         - name: PROJECT_ENV
           value: "knoweng"
+        # FIXME: currently we still use knowredis
         - name: REDIS_HOST
           value: "localhost"
         - name: POSTGRES_HOST
           value: "localhost"
         - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev/lambert8"
+          value: "/userfiles"
         - name: EXEC_MODE
           value: "kubernetes"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
-#        - name: networks
-#          mountPath: "/networks"
-
-        volumeMounts:
-        - name: efs-pvc
+        - name: networks
           mountPath: "/networks"
-    # This YAML assumes that the nest source code has been cloned into /home/ubuntu/nest
+        - name: projectdata
+          mountPath: "/code_live/data/projects/knoweng/"
       volumes:
-      - name: efs-pvc
+      - name: projectdata
+        emptyDir: {}
+      - name: userfiles
+        persistentVolumeClaim:
+          claimName: efs-userfiles
+      # TODO: How do we automate populating this PVC?
+      - name: networks
         persistentVolumeClaim:
           claimName: efs-networks
-      - name: pgdb
-        hostPath:
-          path: "/home/ubuntu/nest/data/db"
-      - name: userfiles
-        hostPath:
-          path: "/home/ubuntu/nest/data/userfiles"
-#      - name: networks
-#        hostPath:
-#          path: "/home/ubuntu/nest/data/projects/knoweng/networks"
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: efs-postgres
+      - name: redisdata
+        persistentVolumeClaim:
+          claimName: efs-redis

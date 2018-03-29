@@ -1,3 +1,90 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cloud9
+  annotations:
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: basic-auth
+    ingress.kubernetes.io/auth-realm: "Authentication Required"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+#    - cloud9.knowdev2.knoweng.org
+    - knowkube.ndslabs.org
+#    secretName: cloud9-tls-secret
+    secretName: nest-tls-secret
+  rules:
+#  - host: cloud9.knowdev2.knoweng.org
+  - host: knowkube.ndslabs.org
+    http:
+      paths:
+      - path: /ide.html
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /vfs/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/mini_require.js
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/lib/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/smith/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/kaefer/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/engine.io/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/msgpack-js/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/standalone/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/vfs-socket/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/plugins/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /configs
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/js/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/font-awesome/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /static/css/
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+      - path: /_ping
+        backend:
+          serviceName: cloud9
+          servicePort: 8001
+---
 apiVersion: v1
 kind: Service
 metadata:
