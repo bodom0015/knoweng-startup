@@ -74,6 +74,8 @@ spec:
       labels:
         app: nginx-ingress
     spec:
+      nodeSelector:
+        has-dns: "true"
       containers:
       - image: gcr.io/google_containers/nginx-ingress-controller:0.8.2
         imagePullPolicy: Always
