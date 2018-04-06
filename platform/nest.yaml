@@ -125,7 +125,7 @@ spec:
       - image: bodom0015/nest-private:flask
         imagePullPolicy: Always
         command: [ "bash" ]
-        args: [ "-c", "echo 'Waiting for postgres to start...' && sleep 30s && ./entrypoint.sh" ]
+        args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 5s; done && sleep 10s && ./entrypoint.sh" ]
         name: flask
         ports:
         - containerPort: 80
@@ -160,7 +160,7 @@ spec:
       - image: bodom0015/nest-private:jobs
         imagePullPolicy: Always
         command: [ "bash" ]
-        args: [ "-c", "echo 'Waiting for flask to start...' && sleep 1m && python -m nest_py.knoweng.jobs.worker_app" ]
+        args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 5s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]
         name: jobs
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
@@ -173,8 +173,10 @@ spec:
           value: "localhost"
         - name: POSTGRES_HOST
           value: "localhost"
+        - name: NEST_RUNLEVEL
+          value: "development"
         - name: AWS_SHARED_MNT_PATH
-          value: "/userfiles"
+          value: ""
         - name: EXEC_MODE
           value: "kubernetes"
         volumeMounts:
