@@ -1,0 +1,63 @@
+# Deployments (and ReplicaSets and ReplicationControllers) are responsible for keeping
+# your Pods running. Pods are containers that share 
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: nest-jobs
+  name: nest-jobs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: nest-jobs
+  # This template describes the Pods that will be created/managed by this Deployment
+  template:
+    metadata:
+      labels:
+        k8s-app: nest-jobs
+    spec:
+      # Private Docker repo needs an image pull secret
+      # For example: kubectl create secret docker-registry regcred --docker-server=<your-registry-server> \
+      #                  --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+      imagePullSecrets:
+      - name: regcred
+
+      containers:
+        # nest_jobs_i
+      - image: bodom0015/nest-private:jobs
+        imagePullPolicy: Always
+        name: jobs
+        #securityContext:
+          #runAsUser: 0   # DOCKER_UID
+          #fsGroup: 999   # DOCKER_GID
+        env:
+        - name: PROJECT_ENV
+          value: "knoweng"
+        - name: NEST_RUNLEVEL
+          value: "development"
+        - name: REDIS_HOST
+          value: "$(REDIS_SERVICE_HOST)"
+        - name: POSTGRES_HOST
+          value: "$(POSTGRES_SERVICE_HOST)"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev/lambert8"
+        - name: EXEC_MODE
+          value: "kubernetes"
+        volumeMounts:
+        - name: userfiles
+          mountPath: "/userfiles"
+        - name: networks
+          mountPath: "/networks"
+        - name: projectdata
+          mountPath: "/code_live/data/projects/knoweng/"
+      volumes:
+      - name: projectdata
+        emptyDir: {}
+      - name: userfiles
+        persistentVolumeClaim:
+          claimName: efs-userfiles
+      # TODO: How do we automate populating this PVC?
+      - name: networks
+        persistentVolumeClaim:
+          claimName: efs-networks

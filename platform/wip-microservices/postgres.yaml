@@ -1,0 +1,61 @@
+# A Service assigns a static (private)  IP for our containers 
+# to easily expose particular ports to all Pods in the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: postgres
+  name: postgres
+spec:
+  ports:
+    # NOTE: This redis instance is currently not being used
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  # Selector determines which Pods should be used by this Service
+  selector:
+    k8s-app: postgres
+---
+# Deployments (and ReplicaSets and ReplicationControllers) are responsible for keeping
+# your Pods running. Pods are containers that share a common network, so they
+# can communicate via "localhost"
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: postgres
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: postgres
+  # This template describes the Pods that will be created/managed by this Deployment
+  template:
+    metadata:
+      labels:
+        k8s-app: postgres
+    spec:
+      containers:
+
+        # postgres_i
+      - image: postgres:9.6.2
+        name: postgres
+        env:
+        - name: PGDATA
+          value: "/data/db/postgres"
+        - name: POSTGRES_USER
+          value: "nest"
+        - name: POSTGRES_PASSWORD
+          value: "Toaslej8"
+        volumeMounts:
+        - name: pgdata
+          mountPath: "/data/db"
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+      volumes:
+      - name: pgdata
+        persistentVolumeClaim:
+          claimName: efs-postgres

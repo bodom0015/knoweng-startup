@@ -1,16 +1,26 @@
 #!/bin/bash
+# Usage: ./knoweng.sh [hostname]
+#
+# This script will deploy the KnowEnG platform as a series of Kubernetes YAML.
+#
+# It assumes that you have a local kubectl binary installed in the
+# location pointed to by $BINDIR
+#
+#
 
-# Start Kubernetes
-# XXX: For single-node developer instance, uncomment this line
-#./kube.sh
+# Mode can be either 'dev' or 'prod'
+MODE="dev"
 
 # Location of "kubectl" binary
 BINDIR="/usr/local/bin"
 ECHO="echo -e"
-DOMAIN="knowcube.ndslabs.org"
+DOMAIN="${1:-knowkube.ndslabs.org}"
 
-# Stop everything first
-$BINDIR/kubectl delete -f platform/
+# For development instances, start a single-node 
+# Kubernetes cluster running under Docker
+if [ "$MODE" == "dev" ]; then
+    ./kube.sh
+fi
 
 # Make sure we've created a basic-auth secret
 kube_output="$(kubectl get secret -o name basic-auth 2>&1)"
@@ -66,5 +76,13 @@ fi
 $BINDIR/kubectl create secret generic nest-tls-secret --from-file=tls.crt="${CRT_DIR}/${DOMAIN}.cert" --from-file=tls.key="${CRT_DIR}/${DOMAIN}.key" --namespace=kube-system
 $BINDIR/kubectl create secret generic nest-tls-secret --from-file=tls.crt="${CRT_DIR}/${DOMAIN}.cert" --from-file=tls.key="${CRT_DIR}/${DOMAIN}.key"
 
-# Start loadbalancer, nest, and Cloud9 applications
-$BINDIR/kubectl apply -f platform
+# Always start the loadbalancer
+$BINDIR/kubectl apply -f platform/loadbalancer.yaml
+
+# Start nest dev / prod instance
+$BINDIR/kubectl apply -f platform/nest.${MODE}.yaml
+
+# If this is a developer instance, also start up Cloud9
+if [ "$MODE" == "dev" ]; then
+    $BINDIR/kubectl apply -f platform/cloud9.yaml
+fi

@@ -1,3 +1,59 @@
+# This template describes the KnowEnG development stack, 
+# which will mount in and operate on data from the host
+
+# Ingress rules assign a hostname/path to expose particular ports to the public internet
+# NOTE: "Host" header must match in order to be routed
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    # Force users to redirect from HTTP to HTTPS
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+  name: nest-ingress
+spec:
+  tls:
+  - hosts:
+    - knowkube.ndslabs.org
+    secretName: nest-tls-secret
+  rules:
+  - host: knowkube.ndslabs.org
+    http:
+      # Define all paths served by our app to generate an nginx configuration
+      paths:
+      - path: /
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/img/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/node_modules/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/dist/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/css/knoweng/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /static/css/mmbdb/
+        backend:
+          serviceName: nest
+          servicePort: 80
+      - path: /api/
+        backend:
+          serviceName: nest
+          servicePort: 80
+---
 # Services assigns a static IP for our containers to expose particular ports to all Pods in the cluster
 apiVersion: v1
 kind: Service

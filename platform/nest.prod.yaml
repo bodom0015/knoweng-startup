@@ -1,3 +1,5 @@
+# This template describes the KnowEnG production stack, 
+# which will mount in and operate on data from AWS EFS
 
 # Ingress rules assign a hostname/path to expose particular ports to the public internet
 # NOTE: "Host" header must match in order to be routed

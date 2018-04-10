@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+# Usage: ./kube.sh
+#
+# This script will deploy a HyperKube kubelet Docker container.
+#
+# The kubelet will then spawn the apiserver, controller, scheduler, etc
+# necessary to run Kubernetes. this effectively runs a Kubernetes cluster
+# as a series of microservice Docker containers
+#
+#
 
 export K8S_VERSION=1.5.2
 export BINDIR="$HOME/bin"

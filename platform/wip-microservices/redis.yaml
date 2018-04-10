@@ -1,0 +1,53 @@
+# A Service assigns a static (private)  IP for our containers 
+# to easily expose particular ports to all Pods in the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: redis
+  name: redis
+spec:
+  ports:
+    # NOTE: This redis instance is currently not being used
+  - name: redis
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  # Selector determines which Pods should be used by this Service
+  selector:
+    k8s-app: redis
+---
+# Deployments (and ReplicaSets and ReplicationControllers) are responsible for keeping
+# your Pods running. Pods are containers that share a common network, so they
+# can communicate via "localhost"
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: redis
+  # This template describes the Pods that will be created/managed by this Deployment
+  template:
+    metadata:
+      labels:
+        k8s-app: redis
+    spec:
+      containers:
+        # redis_i
+      - image: redis:3.0.3
+        name: redis
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        volumeMounts:
+        - name: redisdata
+          mountPath: "/data"
+      volumes:
+      - name: redisdata
+        persistentVolumeClaim:
+          claimName: efs-redis

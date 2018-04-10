@@ -21,7 +21,7 @@ services:
 
   # IDE
   cloud9:
-    build: ./platform/
+    build: ./platform/Dockerfile.cloud9
     image: bodom0015/cloud9-nest
     
   # Platform

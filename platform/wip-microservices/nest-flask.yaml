@@ -1,0 +1,72 @@
+# A Service assigns a static (private)  IP for our containers 
+# to easily expose particular ports to all Pods in the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-app: nest-flask
+  name: nest-flask
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  # Selector determines which Pods should be used by this Service
+  selector:
+    k8s-app: nest-flask
+---
+# Deployments (and ReplicaSets and ReplicationControllers) are responsible for keeping
+# your Pods running. Pods are containers that share a common network, so they
+# can communicate via "localhost"
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: nest-flask
+  name: nest-flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: nest-flask
+  # This template describes the Pods that will be created/managed by this Deployment
+  template:
+    metadata:
+      labels:
+        k8s-app: nest-flask
+    spec:
+      # Private Docker repo needs an image pull secret
+      # For example: kubectl create secret docker-registry regcred --docker-server=<your-registry-server> \
+      #                  --docker-username=<your-name> --docker-password=<your-pword> --docker-email=<your-email>
+      imagePullSecrets:
+      - name: regcred
+
+      containers:
+        # nest_flask_i
+      - image: bodom0015/nest-private:flask
+        imagePullPolicy: Always
+        name: flask
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        env:
+        - name: PROJECT_ENV
+          value: "knoweng"
+        - name: NEST_RUNLEVEL
+          value: "development"
+        - name: REDIS_HOST
+          value: "$(REDIS_SERVICE_HOST)"
+        - name: POSTGRES_HOST
+          value: "$(POSTGRES_SERVICE_HOST)"
+          value: "localhost"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev/lambert8"
+        volumeMounts:
+        - name: userfiles
+          mountPath: "/userfiles"
+      volumes:
+      - name: userfiles
+        persistentVolumeClaim:
+          claimName: efs-userfiles
+          
