@@ -52,7 +52,7 @@ spec:
           serviceName: nest
           servicePort: 80
 ---
-# Services assigns a static IP for our containers to expose particular ports to all Pods in the cluster
+# Services assign a static IP for our containers to expose particular ports to all Pods in the cluster
 apiVersion: v1
 kind: Service
 metadata:
@@ -100,7 +100,7 @@ spec:
 
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
-        # NOTE: order here seems to determine startup order
+        # NOTE: order here seems to somewhat determine startup order
         # "postgres" must start before "flask"
         # "redis" must start before "jobs"
 
@@ -125,7 +125,7 @@ spec:
       - image: bodom0015/nest-private:flask
         imagePullPolicy: Always
         command: [ "bash" ]
-        args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 5s; done && sleep 10s && ./entrypoint.sh" ]
+        args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 10s; done && sleep 20s && ./entrypoint.sh" ]
         name: flask
         ports:
         - containerPort: 80
@@ -134,7 +134,7 @@ spec:
         - name: PROJECT_ENV
           value: "knoweng"
         - name: NEST_RUNLEVEL
-          value: "development"
+          value: "production"
         - name: POSTGRES_HOST
           value: "localhost"
         # FIXME: currently we still use knowredis
@@ -160,7 +160,7 @@ spec:
       - image: bodom0015/nest-private:jobs
         imagePullPolicy: Always
         command: [ "bash" ]
-        args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 5s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]
+        args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 10s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]
         name: jobs
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
@@ -174,11 +174,13 @@ spec:
         - name: POSTGRES_HOST
           value: "localhost"
         - name: NEST_RUNLEVEL
-          value: "development"
+          value: "production"
         - name: AWS_SHARED_MNT_PATH
           value: ""
         - name: EXEC_MODE
           value: "kubernetes"
+        #- name: SEED_DATABASE
+        #  value: "true"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
