@@ -47,6 +47,8 @@ To run a development Kubernetes cluster (via Docker):
 ./kube.sh
 ```
 
+This will start a series of Docker containers that allow you to run Kubernetes on a single machine!
+
 NOTE: You'll need to manually add the path to the `kubectl` binary to your `$PATH`.
 
 ## Minikube (single-node, single VM)
@@ -56,7 +58,9 @@ See https://github.com/kubernetes/minikube
 See https://github.com/kubernetes-incubator/kubespray/blob/master/docs/vagrant.md
 
 # Running the Platform
-To run the KnowEnG platform and a Cloud9 IDE:
+To run the KnowEnG platform, you need only `kubectl` access to a Kubernetes cluster.
+
+To start up the platform in `dev` mode, with a Cloud9 IDE:
 ```bash
 ./knoweng.sh
 ```
@@ -66,11 +70,10 @@ For an example of the running platform, see: [knoweng.org/analyze](knoweng.org/a
 ## Behind the Scenes
 The `./knoweng.sh` helper script does several things:
 * Ensures that the user has a `basic-auth` secret set up for Cloud9 to consume
-* Ensures that the source code is checked out to `/home/ubuntu` (you will be prompted for your BitBucket credentials)
 * Generates self-signed SSL certs if they are not found for the given domain
 * Ensures that certificates have been imported as Kubernetes secrets
-* Create [ingress rules](ingress.yaml) to route `/ide.html` to Cloud9, and `/` to the KnowEnG Dashboard
-* Starts up the Kubernetes [NGINX Ingress Controller](https://github.com/kubernetes/ingress/tree/master/controllers/nginx)
+* Create [ingress rules](ingress.yaml) (referencing our TLS secrets) that will route `/ide.html` to Cloud9, and route everything else to the KnowEnG Dashboard
+* Starts up a Pod running the Kubernetes [NGINX Ingress Controller](https://github.com/kubernetes/ingress/tree/master/controllers/nginx) and its default-backend
 * Starts up a Pod running the 4 containers comprising KnowEnG Dashboard
 * Starts up a Pod running the Cloud9 IDE
 
