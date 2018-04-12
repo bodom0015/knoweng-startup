@@ -14,10 +14,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - knowkube.ndslabs.org
+    - knowdev.ndslabs.org
     secretName: nest-tls-secret
   rules:
-  - host: knowkube.ndslabs.org
+  - host: knowdev.ndslabs.org
     http:
       # Define all paths served by our app to generate an nginx configuration
       paths:
@@ -97,33 +97,9 @@ spec:
     spec:
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
-
-        # nest_flask_i
-      - image: bodom0015/nest:flask
-        imagePullPolicy: Never
-        name: flask
-        ports:
-        - containerPort: 80
-          protocol: TCP
-        env:
-        - name: PROJECT_ENV
-          value: "knoweng"
-        - name: NEST_RUNLEVEL
-          value: "development"
-        - name: POSTGRES_HOST
-          value: "localhost"
-        - name: REDIS_HOST
-          value: "localhost"
-        - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev/lambert8"
-        volumeMounts:
-        - name: userfiles
-          mountPath: "/userfiles"
-        - name: demofiles
-          mountPath: "/demo_files"
-
         # postgres_i
       - image: postgres:9.6.2
+        imagePullPolicy: Always
         name: postgres
         env:
         - name: PGDATA
@@ -139,8 +115,37 @@ spec:
         - containerPort: 5432
           protocol: TCP
 
+        # nest_flask_i
+      - image: bodom0015/nest:flask
+        imagePullPolicy: Always
+        name: flask
+        command: [ "bash" ]
+        args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 10s; done && sleep 20s && ./entrypoint.sh" ]
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        env:
+        - name: PROJECT_ENV
+          value: "knoweng"
+        - name: NEST_RUNLEVEL
+          value: "development"
+        - name: POSTGRES_HOST
+          value: "localhost"
+        - name: REDIS_HOST
+          value: "localhost"
+        - name: AWS_SHARED_MNT_PATH
+          value: "/mnt/knowdev"
+        - name: AWS_REDIS_HOST
+          value: "knowredis.knoweng.org"
+        - name: AWS_REDIS_PASS
+          value: "KnowEnG"
+        volumeMounts:
+        - name: userfiles
+          mountPath: "/userfiles"
+
         # redis_i
       - image: redis:3.0.3
+        imagePullPolicy: Always
         name: redis
         ports:
         - containerPort: 6379
@@ -148,8 +153,10 @@ spec:
 
         # nest_jobs_i
       - image: bodom0015/nest:jobs
-        imagePullPolicy: Never
+        imagePullPolicy: Always
         name: jobs
+        command: [ "bash" ]
+        args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 10s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
           #fsGroup: 999   # DOCKER_GID
@@ -161,31 +168,25 @@ spec:
         - name: POSTGRES_HOST
           value: "localhost"
         - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev/lambert8"
+          value: "/mnt/knowdev"
         - name: EXEC_MODE
           value: "kubernetes"
+        #- name: SEED_DATABASE
+        #  value: "true"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
         - name: networks
           mountPath: "/networks"
-        - name: readmes
-          mountPath: "/pipeline_readmes"
 
     # This YAML assumes that the nest source code has been cloned into /home/ubuntu/nest
       volumes:
       - name: pgdb
         hostPath:
-          path: "/home/ubuntu/nest/data/db"
+          path: "/home/ubuntu/data/db"
       - name: userfiles
         hostPath:
-          path: "/home/ubuntu/nest/data/userfiles"
+          path: "/home/ubuntu/userfiles"
       - name: networks
         hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/networks"
-      - name: readmes
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/pipeline_readmes"
-      - name: demofiles
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/demo_files"
+          path: "/home/ubuntu/networks"

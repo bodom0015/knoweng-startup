@@ -11,7 +11,7 @@
 #
 
 export K8S_VERSION=1.5.2
-export BINDIR="$HOME/bin"
+export BINDIR="/usr/bin/"
 ECHO='echo -e'
 
 command="$(echo $1 | tr '[A-Z]' '[a-z]')"

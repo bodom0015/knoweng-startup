@@ -10,11 +10,12 @@
 
 # Mode can be either 'dev' or 'prod'
 MODE="dev"
+START_IDE="false"
 
 # Location of "kubectl" binary
-BINDIR="/usr/local/bin"
+BINDIR="/usr/bin"
 ECHO="echo -e"
-DOMAIN="${1:-knowkube.ndslabs.org}"
+DOMAIN="${1:-knowdev.ndslabs.org}"
 
 # For development instances, start a single-node 
 # Kubernetes cluster running under Docker
@@ -24,7 +25,7 @@ fi
 
 # Make sure we've created a basic-auth secret
 kube_output="$(kubectl get secret -o name basic-auth 2>&1)"
-if [ "$kube_output" != "secret/basic-auth" ]; then
+if [ "$START_IDE" == "true" -a "$kube_output" != "secret/basic-auth" ]; then
     echo "Generating new basic-auth secret... This will be used to authenticate into your Cloud9 IDE"
 
     # Collect Username
@@ -83,6 +84,6 @@ $BINDIR/kubectl apply -f platform/loadbalancer.yaml
 $BINDIR/kubectl apply -f platform/nest.${MODE}.yaml
 
 # If this is a developer instance, also start up Cloud9
-if [ "$MODE" == "dev" ]; then
+if [ "$MODE" == "dev" -a "$START_IDE" == "true" ]; then
     $BINDIR/kubectl apply -f platform/cloud9.yaml
 fi
