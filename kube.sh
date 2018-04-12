@@ -11,7 +11,7 @@
 #
 
 export K8S_VERSION=1.5.2
-export BINDIR="/usr/bin/"
+export BINDIR="/usr/bin"
 ECHO='echo -e'
 
 command="$(echo $1 | tr '[A-Z]' '[a-z]')"
@@ -83,11 +83,11 @@ $ECHO 'Waiting for Kubernetes API server to start on port 8080...'
 #
 # Download kubectl, if necessary
 #
-if [ ! -d "$BINDIR" ]; then
+if [ ! -d "$BINDIR" -o ! -f "$BINDIR/kubectl" ]; then
     mkdir -p $BINDIR
     $ECHO "Downloading kubectl binary to $BINDIR..."
-    curl http://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl -o ~/bin/kubectl
-    chmod +x ~/bin/kubectl
+    curl http://storage.googleapis.com/kubernetes-release/release/v${K8S_VERSION}/bin/linux/amd64/kubectl -o $BINDIR/kubectl
+    chmod +x $BINDIR/kubectl
 
     # TODO: Need an elegant way to add bins to PATH programmatically
     export PATH="$BINDIR:$PATH"
