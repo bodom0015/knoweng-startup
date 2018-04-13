@@ -10,6 +10,7 @@ Deployment commands / notes
 - https://github.com/bodom0015/knoweng-startup
 - https://github.com/bodom0015/knoweng-startup/tree/master/pipelines
 - https://github.com/bodom0015/platform/tree/master/NOTES.md
+- https://opensource.ncsa.illinois.edu/jira/browse/KNOW-795
 
 # External References:
 - Workshop Materials: https://github.com/aws-samples/aws-workshop-for-kubernetes
