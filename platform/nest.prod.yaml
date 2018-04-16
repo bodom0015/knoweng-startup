@@ -68,10 +68,6 @@ spec:
   - name: http
     port: 80
     protocol: TCP
-    # NOTE: This redis instance is currently not being used
-  - name: redis
-    port: 6379
-    protocol: TCP
   # Selector determines which Pods should be used by this Service
   selector:
     k8s-app: nest
