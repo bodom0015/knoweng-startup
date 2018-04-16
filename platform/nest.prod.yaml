@@ -97,8 +97,6 @@ spec:
       labels:
         k8s-app: nest
     spec:
-      imagePullSecrets:
-      - name: regcred
 
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
@@ -115,7 +113,7 @@ spec:
         - name: POSTGRES_USER
           value: "nest"
         - name: POSTGRES_PASSWORD
-          value: "Toaslej8"
+          value: "GARBAGESECRET"
         volumeMounts:
         - name: pgdata
           mountPath: "/data/db"
@@ -124,7 +122,7 @@ spec:
           protocol: TCP
           
         # nest_flask_i
-      - image: bodom0015/nest-private:flask
+      - image: bodom0015/nest:flask
         imagePullPolicy: Always
         command: [ "bash" ]
         args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 10s; done && sleep 20s && ./entrypoint.sh" ]
@@ -139,9 +137,15 @@ spec:
           value: "production"
         - name: POSTGRES_HOST
           value: "localhost"
+        - name: POSTGRES_PASSWORD
+          value: "GARBAGESECRET"
         # FIXME: currently we still use knowredis
         - name: REDIS_HOST
           value: "localhost"
+        - name: AWS_REDIS_HOST
+          value: "knowredis.knoweng.org"
+        - name: AWS_REDIS_PASS
+          value: "KnowEnG"
         - name: AWS_SHARED_MNT_PATH
           value: "/userfiles"
         volumeMounts:
@@ -159,7 +163,7 @@ spec:
           mountPath: "/data"
 
         # nest_jobs_i
-      - image: bodom0015/nest-private:jobs
+      - image: bodom0015/nest:jobs
         imagePullPolicy: Always
         command: [ "bash" ]
         args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 10s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]

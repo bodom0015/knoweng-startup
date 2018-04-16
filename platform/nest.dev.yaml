@@ -14,10 +14,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - knowkube.ndslabs.org
+    - knowdev2.knoweng.org
     secretName: nest-tls-secret
   rules:
-  - host: knowkube.ndslabs.org
+  - host: knowdev2.knoweng.org
     http:
       # Define all paths served by our app to generate an nginx configuration
       paths:
@@ -67,11 +67,6 @@ spec:
     port: 80
     protocol: TCP
     targetPort: 80
-    # NOTE: This redis instance is currently not being used
-  - name: redis
-    port: 6379
-    protocol: TCP
-    targetPort: 6379
   # Selector determines which Pods should be used by this Service
   selector:
     k8s-app: nest
@@ -98,9 +93,28 @@ spec:
       # Containers within the same Pod can access each others' ports on "localhost"
       containers:
 
+        # postgres_i
+      - image: postgres:9.6.2
+        name: postgres
+        env:
+        - name: PGDATA
+          value: "/data/db/postgres"
+        - name: POSTGRES_USER
+          value: "nest"
+        - name: POSTGRES_PASSWORD
+          value: "GARBAGESECRET"
+        volumeMounts:
+        - name: pgdata
+          mountPath: "/data/db"
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+
         # nest_flask_i
       - image: bodom0015/nest:flask
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
+        command: [ "bash" ]
+        args: [ "-c", "while ! nc -z localhost 5432; do echo 'Waiting for postgres...'; sleep 10s; done && sleep 20s && ./entrypoint.sh" ]
         name: flask
         ports:
         - containerPort: 80
@@ -112,32 +126,20 @@ spec:
           value: "development"
         - name: POSTGRES_HOST
           value: "localhost"
+        - name: POSTGRES_PASSWORD
+          value: "GARBAGESECRET"
         - name: REDIS_HOST
           value: "localhost"
+        # FIXME: currently we still use knowredis
+        - name: AWS_REDIS_HOST
+          value: "knowredis.knoweng.org"
+        - name: AWS_REDIS_PASS
+          value: "KnowEnG"
         - name: AWS_SHARED_MNT_PATH
           value: "/mnt/knowdev/lambert8"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
-        - name: demofiles
-          mountPath: "/demo_files"
-
-        # postgres_i
-      - image: postgres:9.6.2
-        name: postgres
-        env:
-        - name: PGDATA
-          value: "/data/db/postgres"
-        - name: POSTGRES_USER
-          value: "nest"
-        - name: POSTGRES_PASSWORD
-          value: "Toaslej8"
-        volumeMounts:
-        - name: pgdb
-          mountPath: "/data/db"
-        ports:
-        - containerPort: 5432
-          protocol: TCP
 
         # redis_i
       - image: redis:3.0.3
@@ -145,10 +147,15 @@ spec:
         ports:
         - containerPort: 6379
           protocol: TCP
+        volumeMounts:
+        - name: redisdata
+          mountPath: "/data"
 
         # nest_jobs_i
       - image: bodom0015/nest:jobs
-        imagePullPolicy: Never
+        imagePullPolicy: IfNotPresent
+        command: [ "bash" ]
+        args: [ "-c", "while ! nc -z localhost 80; do echo 'Waiting for flask...'; sleep 10s; done && sleep 10s && python -m nest_py.knoweng.jobs.worker_app" ]
         name: jobs
         #securityContext:
           #runAsUser: 0   # DOCKER_UID
@@ -156,6 +163,8 @@ spec:
         env:
         - name: PROJECT_ENV
           value: "knoweng"
+        - name: NEST_RUNLEVEL
+          value: "development"
         - name: REDIS_HOST
           value: "localhost"
         - name: POSTGRES_HOST
@@ -169,23 +178,18 @@ spec:
           mountPath: "/userfiles"
         - name: networks
           mountPath: "/networks"
-        - name: readmes
-          mountPath: "/pipeline_readmes"
 
     # This YAML assumes that the nest source code has been cloned into /home/ubuntu/nest
       volumes:
-      - name: pgdb
+      - name: pgdata
         hostPath:
-          path: "/home/ubuntu/nest/data/db"
+          path: "/home/ubuntu/nest/data/db/postgres"
+      - name: redisdata
+        hostPath:
+          path: "/home/ubuntu/nest/data/db/redis"
       - name: userfiles
         hostPath:
           path: "/home/ubuntu/nest/data/userfiles"
       - name: networks
         hostPath:
           path: "/home/ubuntu/nest/data/projects/knoweng/networks"
-      - name: readmes
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/pipeline_readmes"
-      - name: demofiles
-        hostPath:
-          path: "/home/ubuntu/nest/data/projects/knoweng/demo_files"
