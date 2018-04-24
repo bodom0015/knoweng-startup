@@ -85,5 +85,6 @@ $BINDIR/kubectl apply -f platform/nest.${MODE}.yaml
 
 # If this is a developer instance, also start up Cloud9
 if [ "$MODE" == "dev" -a "$START_IDE" == "true" ]; then
+    kubectl label node 127.0.0.1 has-dns=true
     $BINDIR/kubectl apply -f platform/cloud9.yaml
 fi

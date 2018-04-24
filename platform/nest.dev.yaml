@@ -6,19 +6,10 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  annotations:
-    # Force users to redirect from HTTP to HTTPS
-    ingress.kubernetes.io/ssl-redirect: "true"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
   name: nest-ingress
 spec:
-  tls:
-  - hosts:
-    - knowdev.ndslabs.org
-    secretName: nest-tls-secret
   rules:
-  - host: knowdev.ndslabs.org
-    http:
+  - http:
       # Define all paths served by our app to generate an nginx configuration
       paths:
       - path: /
@@ -107,7 +98,7 @@ spec:
         - name: POSTGRES_USER
           value: "nest"
         - name: POSTGRES_PASSWORD
-          value: "Toaslej8"
+          value: "GARBAGESECRET"
         volumeMounts:
         - name: pgdb
           mountPath: "/data/db"
@@ -131,14 +122,12 @@ spec:
           value: "development"
         - name: POSTGRES_HOST
           value: "localhost"
+        - name: POSTGRES_PASSWORD
+          value: "GARBAGESECRET"
         - name: REDIS_HOST
           value: "localhost"
         - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev"
-        - name: AWS_REDIS_HOST
-          value: "knowredis.knoweng.org"
-        - name: AWS_REDIS_PASS
-          value: "KnowEnG"
+          value: "/home/ubuntu"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
@@ -168,11 +157,13 @@ spec:
         - name: POSTGRES_HOST
           value: "localhost"
         - name: AWS_SHARED_MNT_PATH
-          value: "/mnt/knowdev"
+          value: "/home/ubuntu"
         - name: EXEC_MODE
           value: "kubernetes"
-        #- name: SEED_DATABASE
-        #  value: "true"
+        - name: AWS_REDIS_HOST
+          value: "knowredis.knoweng.org"
+        - name: AWS_REDIS_PASS
+          value: "KnowEnG"
         volumeMounts:
         - name: userfiles
           mountPath: "/userfiles"
